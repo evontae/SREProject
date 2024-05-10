@@ -33,7 +33,7 @@ Project Roadmap:
 ----------------
 
 -   **Phase 1:**
-    1.  **Monitoring Script (glances):**
+    1.  **Monitoring Script (psutil):**
         -   Begin with a minimal script collecting basic system metrics.
         -   Focus on extracting the essential metrics (CPU, memory, disk, network).
         -   Implement simple output formatting for readability.
