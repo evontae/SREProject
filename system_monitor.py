@@ -1,7 +1,7 @@
 # Create a simple Python monitoring script incorporating the psutil module used to get system metrics
 # Import psutil and other module, print error message if unable to import
 try:
-    import psutil, shutil, datetime # type: ignore
+    import psutil, shutil, datetime, json # type: ignore
 except ImportError as import_error:
     print(f'Error importing module: {import_error}')
     
@@ -129,6 +129,45 @@ def get_network_info():
         print(f"Error: Unexpected error occurred in get_network_info - {error}") 
         return {}
 
-# Create function to print monitor
-# def print_monitor:
-    #current_time = datetime.datetime.now()
+def print_json(system_info) -> str:
+    """
+    This function prints sytem information in JSON format by calling all four functions.
+        
+    Arguments: system_info (dict): A dictionary containing system information.
+
+    Returns: str: The JSON string representation of the system information.
+    """
+    try:
+        json_string = json.dumps(system_info, indent=4)
+        print(json_string)
+        return json_string
+    except Exception as error:
+        print(f"Error: An unexpected error occurred while printing JSON: {error}")
+        return None
+def print_table(system_info):
+    """Prints system information in a tabular format."""
+
+def print_monitor(as_table=False):
+    """
+    Retrieves and prints the system information.
+
+    Args:
+        as_table (bool, optional): If True, prints the output as a table. Defaults to False (JSON).
+    """
+    current_time = datetime.datetime.now()
+    
+    system_info = {
+        "timestamp" : current_time.isoformat(),
+        "cpu" : get_cpu_info(),
+        "memory": get_memory_info(),
+        "disk": get_disk_info(),
+        "network":get_network_info()
+    }
+    if as_table:
+        pass
+    else:
+        result = print_json(system_info)
+        if result is None:
+            print('Error: Unable to generate JSON output.')
+
+
