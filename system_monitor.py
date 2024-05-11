@@ -1,7 +1,7 @@
 # Create a simple Python monitoring script incorporating the psutil module used to get system metrics
 # Import psutil and other module, print error message if unable to import
 try:
-    import psutil, shutil, datetime, json # type: ignore
+    import psutil, shutil, datetime, json, tabulate # type: ignore
 except ImportError as import_error:
     print(f'Error importing module: {import_error}')
     
@@ -129,7 +129,7 @@ def get_network_info():
         print(f"Error: Unexpected error occurred in get_network_info - {error}") 
         return {}
 
-def print_json(system_info) -> str:
+def print_json(system_info: dict) -> str:
     """
     This function prints sytem information in JSON format by calling all four functions.
         
