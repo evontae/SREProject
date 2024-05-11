@@ -1,7 +1,8 @@
 # Create a simple Python monitoring script incorporating the psutil module used to get system metrics
 # Import psutil and other module, print error message if unable to import
 try:
-    import psutil, shutil, datetime, json, tabulate # type: ignore
+    import psutil, shutil, datetime, json # type: ignore
+    import pyinputplus as pyip # type: ignore
 except ImportError as import_error:
     print(f'Error importing module: {import_error}')
     
@@ -170,4 +171,69 @@ def print_monitor(as_table=False):
         if result is None:
             print('Error: Unable to generate JSON output.')
 
+from tabulate import tabulate # type: ignore
 
+# ... (your other functions)
+
+def print_table(system_info):
+    """
+    Prints system information in a tabular format.
+
+    Args:system_info (dict): A dictionary containing system information 
+    with keys 'cpu', 'memory', 'swap', 'disk', and 'network'. Each key 
+    holds another dictionary with the respective metric data.
+
+    Raises: Exception: If an unexpected error occurs during table formatting or printing.
+    """
+    try:
+        current_time = datetime.datetime.now()
+        print(f"\nSystem Monitor - {current_time}")
+        # --- CPU Information Table ---
+        cpu_headers = ["CPU", "User (%)", "System (%)", "Idle (%)"]
+        cpu_table_data = []
+        for cpu, info in system_info['cpu'].items():
+            cpu_table_data.append([cpu, info['user'], info['system'], info['idle']])
+        print("\nCPU Information:")
+        print(tabulate(cpu_table_data, headers=cpu_headers))
+
+        # --- Memory Information Table ---
+        memory_headers = ["Metric", "Value (MB)"]
+        memory_table_data = [
+            ["Total", system_info['memory']['total'] / 1024 / 1024],
+            ["Available", system_info['memory']['available'] / 1024 / 1024],
+            ["Used", (system_info['memory']['total'] - system_info['memory']['available']) / 1024 / 1024],
+            ["Percent", system_info['memory']['percent']]
+        ]
+        print("\nMemory Information:")
+        print(tabulate(memory_table_data, headers=memory_headers))
+
+        # --- Swap Memory Information Table ---
+        swap_headers = ["Metric", "Value (MB)"]
+        swap_table_data = [
+            ["Total", system_info['swap']['total'] / 1024 / 1024],
+            ["Used", system_info['swap']['used'] / 1024 / 1024],
+            ["Free", system_info['swap']['free'] / 1024 / 1024],
+            ["Percent", system_info['swap']['percent']]
+        ]
+        print("\nSwap Information:")
+        print(tabulate(swap_table_data, headers=swap_headers))
+
+        # --- Disk Information Table ---
+        disk_headers = ["Mount Point", "Filesystem", "Size (GB)", "Used (GB)", "Free (GB)", "Percent (%)"]
+        disk_table_data = []
+        for mountpoint, info in system_info["disk"].items():
+            disk_table_data.append([mountpoint, info["fstype"], 
+                                info["total"] / 1024 / 1024 / 1024,
+                                info["used"] / 1024 / 1024 / 1024,
+                                info["free"] / 1024 / 1024 / 1024,
+                                info["percent"]])
+        print("\nDisk Information:")
+        print(tabulate(disk_table_data, headers=disk_headers))
+
+        # --- Network Information Table ---
+        network_headers = ["Metric", "Value"]
+        network_table_data = [[k, v] for k, v in system_info['network'].items()]
+        print("\nNetwork Information:")
+        print(tabulate(network_table_data, headers=network_headers))
+    except Exception as error:
+        print(f"Error: An unexpected error occurred while printing the table: {error}")
