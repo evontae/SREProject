@@ -6,48 +6,104 @@ This project builds a containerized monitoring tool for IT infrastructure with a
 Plan
 ----
 
--   **Containerization (Docker):** Package the monitoring script and its dependencies into a portable, easily deployable Docker container.
--   **Build a system monitoring tool (Python):**
-    -   CPU Usage (overall and per-process)
-    -   Memory Utilization (free, used, swap space)
-    -   Disk Usage (available space, potential bottlenecks)
-    -   Network Traffic (throughput, unusual spikes)
--   **Integrate Ansible:** Automate the setup and configuration of the monitoring application across multiple systems.
--   **Explore alerting:** Integrate a notification tool to alert on critical system conditions or anomalies.
--   **Introduce chaos engineering:**
-    -   Stress test the system by simulating high loads and resource constraints.
-    -   Induce false failures (disk full, unresponsive processes) to assess system robustness.
--   **Capture and redirect logs:** Collect comprehensive logs for analysis and debugging.
--   **(Optional) Move infrastructure to the cloud:** Evaluate and potentially migrate the monitoring solution to a cloud environment for scalability and reliability.
+-   **System Monitoring Script Development (Python):**
+
+    -   Develop a robust Python script utilizing `psutil` and `shutil` to gather comprehensive system metrics:
+        -   CPU usage (overall and per core)
+        -   Memory utilization (total, available, used, swap)
+        -   Disk usage and partitions (total, used, free space, percentage utilization)
+        -   Network traffic (bytes sent/received, packets sent/received)
+-   **Containerization (Docker):**
+
+    -   Package the monitoring script and its dependencies into a Docker container for portability and ease of deployment.
+    -   Configure the container to log system metrics to a centralized location (e.g., Azure Storage Account).
+-   **Cloud Infrastructure Provisioning (Terraform):**
+
+    -   Utilize Terraform to define and provision the required Azure cloud infrastructure:
+        -   Azure Virtual Machines (or Azure Container Instances) to run the monitoring containers.
+        -   Azure Storage Account to store logs and metrics.
+        -   Azure Container Registry to store the Docker images.
+        -   Networking components (Virtual Networks, Network Security Groups) for secure communication.
+-   **Serverless Implementation (Azure Functions):**
+
+    -   Refactor the Python script into individual Azure Functions, each responsible for collecting and processing a specific set of metrics.
+    -   Leverage Azure Functions' scalability and event-driven capabilities to optimize resource usage and cost-efficiency.
+-   **CI/CD Pipeline (Azure DevOps):**
+
+    -   Establish a CI/CD pipeline using Azure DevOps to automate the building, testing, and deployment of the monitoring application.
+    -   Integrate Terraform into the pipeline to manage infrastructure updates and ensure consistency across environments.
+-   **Observability and Alerting (Azure Monitor):**
+
+    -   Configure Azure Monitor to collect logs and metrics from the monitoring application and the underlying Azure infrastructure.
+    -   Set up custom dashboards and alerts in Azure Monitor to gain insights into system health, performance, and potential issues.
+-   **Chaos Engineering and Reliability Testing:**
+
+    -   Introduce chaos engineering practices to proactively test the resilience and fault tolerance of your monitoring system.
+    -   Utilize Azure Chaos Studio or other tools to simulate real-world failures and measure the impact on your application.
+    -   Use the findings to identify vulnerabilities and strengthen your infrastructure and application.
+-   **Web Dashboard (Flask/Django):**
+
+    -   Develop a web-based dashboard using Flask or Django to visualize real-time and historical system metrics.
+    -   Integrate the dashboard with Azure Monitor to provide a comprehensive view of your system's health and performance.
+-   **Advanced Features (Optional):**
+
+    -   Explore additional functionalities like autoscaling, cost optimization, and integration with other monitoring and alerting tools.
+    -   Consider expanding the monitoring scope to include application-specific metrics and logs.
 
 Technologies
 ------------
 
--   **Containerization:** Docker
--   **Configuration Management:** Ansible
--   **System Monitoring:** Python (`shutil`, `psutil`)
--   **Logging:** Python `logging` module
--   **Web Dashboard:** Python web framework (Flask, Django, or similar)
--   **Cloud Deployment:** Azure DevOps (Potential)
--   **Table Formatting Library:** Tabulate (or similar)
+-   **Containerization:** Docker (for packaging and deployment)
+-   **Cloud Infrastructure Provisioning:** Terraform (for managing Azure resources)
+-   **Serverless Computing:** Azure Functions (for event-driven processing of metrics)
+-   **CI/CD Pipeline:** Azure DevOps (for automating build, test, and deployment)
+-   **System Monitoring:** Python with `psutil` (for collecting system metrics) and `shutil` (for disk usage)
+-   **Observability:** Azure Monitor (for collecting logs and metrics, dashboards, and alerting)
+-   **Chaos Engineering:** Azure Chaos Studio or similar tools (for resilience testing)
+-   **Web Dashboard:** Flask or Django (for creating the web interface)
+-   **Data Visualization:** Potentially libraries like `tabulate` (for tables), `plotly`, or `bokeh` (for interactive charts).
+-   **(Optional) Configuration Management:** Ansible (for automating configuration and deployment if needed)
 
 Project Roadmap:
 ----------------
 
--   **Phase 1: Initial Script and Containerization (Weeks 1-2):**
-    -   Develop a Python script to collect basic system metrics (CPU, memory, disk, network).
-    -   Create a Dockerfile to containerize the script and its dependencies.
-    -   Test the containerized application on a local machine.
--   **Phase 2: Ansible Integration and Alerting (Weeks 3-4):**
-    -   Write Ansible playbooks to automate the deployment and configuration of the monitoring container.
-    -   Research and integrate a suitable alerting mechanism (e.g., email, Slack notifications) triggered by user-defined thresholds.
--   **Phase 3: Chaos Engineering and Reliability Testing (Weeks 5-6):**
-    -   Develop scripts or tools to simulate various system failures and stressors.
-    -   Conduct controlled chaos engineering experiments to assess system resilience.
-    -   Refine the monitoring and alerting system based on findings from these experiments.
--   **Phase 4: Web Dashboard and Cloud Deployment (Optional, Weeks 7+):**
-    -   Build a web-based dashboard using a Python web framework to visualize real-time system metrics.
-    -   Evaluate the feasibility of migrating the entire solution to a cloud platform like Azure DevOps.
+-   **Phase 1: Initial Script and Containerization:**
+
+    -   **Deliverable:** A working Python script that gathers system metrics (CPU, memory, disk, network) and outputs data in a structured format (JSON).
+    -   **Deliverable:** A Dockerfile and a built Docker image containing the Python script and its dependencies.
+    -   **Deliverable:** A set of unit tests to verify the script's core functionality within the Docker container.
+
+-   **Phase 2: Cloud Infrastructure Provisioning with Terraform:**
+
+    -   **Deliverable:** Terraform configuration files (`.tf`) defining the Azure resources (Azure Virtual Machine, Azure Storage Account for logs, Azure Container Registry).
+    -   **Deliverable:** A successfully provisioned Azure environment with the resources defined in the Terraform files.
+    -   **Deliverable:** A Terraform module for the monitoring infrastructure to ensure reusability and maintainability.
+
+-   **Phase 3: Serverless Integration with Azure Functions:**
+
+    -   **Deliverable:** Azure Functions replacing the original Python script, each handling a specific monitoring task.
+    -   **Deliverable:** Function triggers (timer-based, HTTP-triggered) set to execute functions at intervals or on-demand.
+    -   **Deliverable:** Azure Storage Queues or Tables storing collected metrics, enabling historical analysis and visualization.
+    
+-   **Phase 4: CI/CD Pipeline Implementation with Azure DevOps:**
+
+    -   **Deliverable:** An Azure DevOps project with a CI/CD pipeline to automate builds, tests, and deployments.
+    -   **Deliverable:** Pipeline stages for linting, unit testing, and integration testing to ensure code quality and reliability.
+    -   **Deliverable:** Automated deployment of the containerized application to Azure using Terraform and Azure DevOps integration.
+-   **Phase 5: Observability and Alerting with Azure Monitor:**
+
+    -   **Deliverable:** Azure Monitor configuration to collect logs, metrics from the app, and infrastructure.
+    -   **Deliverable:** Custom Azure dashboards visualizing system health, performance, and historical trends.
+    -   **Deliverable:** Alerts and notifications (email, SMS, etc.) based on custom thresholds or anomaly detection in Azure Monitor.
+-   **Phase 6: Chaos Engineering and Reliability Testing:**
+
+    -   **Deliverable:** Chaos engineering experiments using Azure Chaos Studio or similar tools to simulate failures and assess resilience.
+    -   **Deliverable:** Detailed report analyzing the experiment results, including identified weaknesses and recommendations for improvement.
+-   **Phase 7: Web Dashboard and Advanced Features:**
+
+    -   **Deliverable:** Interactive web dashboard using a Python framework (e.g., Flask, Django) hosted on Azure App Service, displaying real-time metrics.
+    -   **Deliverable:** Integration with Azure Monitor to pull metrics and logs into the web dashboard for visualization.
+    -   **Deliverable:** Implementation of autoscaling features based on system load or specific metrics (e.g., CPU usage) using Azure Virtual Machine Scale Sets.
 
 Design Process:
 ---------------
