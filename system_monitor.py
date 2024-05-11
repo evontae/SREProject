@@ -4,24 +4,37 @@ try:
     import psutil, shutil, datetime # type: ignore
 except ImportError as import_error:
     print(f'Error importing module: {import_error}')
-
-#  Create 4 seperate function to retrieve cpu, network, memory & disk metrics. Return a dict for each function and implement error handling to handle access denial and a general exception. We are using a very similar function call for each function 
+    
 def get_cpu_info():
+    """
+    This function gets information on the CPU, such as cores and usage.
+    
+    Error handling: access denial and general exceptions
+    
+    Returns: Dictionary with cpu information.
+    """
     try:
         cpu_count = psutil.cpu_count()
         cpu_percent = psutil.cpu_times_percent(percpu=True)
         cpu_information =  {}
         for range, cpu in enumerate(cpu_percent):
             cpu_information[f'cpu{range+1}'] = cpu._asdict()
-            return cpu_information
+        return cpu_information
     except psutil.AccessDenied:
         print("Error: Access denied to CPU information.")
-        return {}  # Return empty dictionary
-    except Exception as e:  # Catch any unexpected errors
-        print(f"Error: Unexpected error occurred - {e}")
-    return {}
+        return {}  
+    except Exception as error:  
+        print(f"Error: Unexpected error occurred - {error}")
+        return {}
 
 def get_memory_info():
+    """
+    This function gets information on memory, such as swap memory and the virtual usage.
+
+    Error handling: access denial and general exceptions
+
+    Returns: Dictionary with memory information.
+    """
     try:
         memory = psutil.virtual_memory()
         swap_memory = psutil.swap_memory()
@@ -36,22 +49,27 @@ def get_memory_info():
                 "available": swap_memory.available,
                 "free":swap_memory.free,
                 "percent":swap_memory.percent
-            }
-            
+            }          
         }   
     except psutil.AccessDenied:
-        print(f"Error: Access denied to memory information.")  # Change xxx to the relevant resource
-        return {}  # Or a suitable default value for the function
-    except Exception as me:
-        print(f"Error: Unexpected error occurred in get_memory_info - {me}") 
+        print(f"Error: Access denied to memory information.")  
+        return {}  
+    except Exception as error:
+        print(f"Error: Unexpected error occurred in get_memory_info - {error}") 
         return {}
 
 def get_disk_info():
+    """
+    This function gets information on the disks, such as each partition and their usage.
+    
+    Error handling: access denial and general exceptions
+
+    Returns: Dictionary with disk type and usage information.
+    """
     try:
         disk_partitions = psutil.disk_partitions()
         disk_info ={}
         for partition in disk_partitions:
-            disk_usage = psutil.disk_usage()
             usage = shutil.disk_usage(partition.mountpoint)
             # Create a dictionary for this partition (use mountpoint as key)
             disk_info[partition.mountpoint] = {
@@ -67,12 +85,19 @@ def get_disk_info():
         return disk_info  # Return the main dictionary
     except psutil.AccessDenied:
         print(f"Error: Access denied to disk information.")  # Change xxx to the relevant resource
-        return {}  # Or a suitable default value for the function
-    except Exception as de:
-        print(f"Error: Unexpected error occurred in get_disk_info - {de}") 
+        return {}  
+    except Exception as error:
+        print(f"Error: Unexpected error occurred in get_disk_info - {error}") 
         return {}
     
 def get_network_info():
+    """
+    This function gets information on network metrics, the bytes and packets.
+    
+    Error handling: access denial and general exceptions
+
+    Returns: Dictionary with network information on data sent and received.
+    """
     try:
         network_usage = psutil.net_io_counters()
         return {
@@ -82,10 +107,10 @@ def get_network_info():
             "Packets Received": network_usage.packets_recv
         }
     except psutil.AccessDenied:
-        print(f"Error: Access denied to network information.")  # Change xxx to the relevant resource
-        return {}  # Or a suitable default value for the function
-    except Exception as ne:
-        print(f"Error: Unexpected error occurred in get_network_info - {ne}") 
+        print(f"Error: Access denied to network information.")  
+        return {}  
+    except Exception as error:
+        print(f"Error: Unexpected error occurred in get_network_info - {error}") 
         return {}
 
 # Create function to print monitor
