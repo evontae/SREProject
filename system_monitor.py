@@ -11,14 +11,18 @@ def get_cpu_info():
     
     Error handling: access denial and general exceptions
     
+    Arguments: None
+    
     Returns: Dictionary with cpu information.
+    
+    Return Type: Dict
     """
     try:
         cpu_count = psutil.cpu_count()
         cpu_percent = psutil.cpu_times_percent(percpu=True)
         cpu_information =  {}
-        for range, cpu in enumerate(cpu_percent):
-            cpu_information[f'cpu{range+1}'] = cpu._asdict()
+        for cpu_index, cpu in enumerate(cpu_percent):
+            cpu_information[f'cpu{cpu_index+1}'] = cpu._asdict()
         return cpu_information
     except psutil.AccessDenied:
         print("Error: Access denied to CPU information.")
@@ -32,8 +36,12 @@ def get_memory_info():
     This function gets information on memory, such as swap memory and the virtual usage.
 
     Error handling: access denial and general exceptions
+    
+    Arguments: None
 
     Returns: Dictionary with memory information.
+    
+    Return Type: Dict
     """
     try:
         memory = psutil.virtual_memory()
@@ -63,8 +71,12 @@ def get_disk_info():
     This function gets information on the disks, such as each partition and their usage.
     
     Error handling: access denial and general exceptions
+    
+    Arguments: None
 
     Returns: Dictionary with disk type and usage information.
+    
+    Return Type: Dict
     """
     try:
         disk_partitions = psutil.disk_partitions()
@@ -95,8 +107,12 @@ def get_network_info():
     This function gets information on network metrics, the bytes and packets.
     
     Error handling: access denial and general exceptions
+    
+    Arguments: None
 
     Returns: Dictionary with network information on data sent and received.
+    
+    Return Type: Dict
     """
     try:
         network_usage = psutil.net_io_counters()
