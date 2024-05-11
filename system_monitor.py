@@ -1,7 +1,7 @@
 # Create a simple Python monitoring script incorporating the psutil module used to get system metrics
 # Import psutil and other module, print error message if unable to import
 try:
-    import psutil, os, datetime # type: ignore
+    import psutil, shutil, datetime # type: ignore
 except ImportError as import_error:
     print(f'Error importing module: {import_error}')
 
@@ -48,18 +48,23 @@ def get_memory_info():
 
 def get_disk_info():
     try:
-        home_dir = os.path.expanduser('~')
-        disk_usage = psutil.disk_usage(home_dir)
         disk_partitions = psutil.disk_partitions()
-        # Use shutil and psutil to get disk partitions and usage data
-        return {
-            "Disk Usage" : {
-                "total":disk_usage.total,
-                "available": disk_usage.available,
-                "free":disk_usage.free,
-                "percent":disk_usage.percent
+        disk_info ={}
+        for partition in disk_partitions:
+            disk_usage = psutil.disk_usage()
+            usage = shutil.disk_usage(partition.mountpoint)
+            # Create a dictionary for this partition (use mountpoint as key)
+            disk_info[partition.mountpoint] = {
+                "device": partition.device,
+                "fstype": partition.fstype,
+                "opts": partition.opts,  # Include options if needed
+                "total": usage.total,
+                "used": usage.used,
+                "free": usage.free,
+                "percent": usage.percent
             }
-        }
+            
+        return disk_info  # Return the main dictionary
     except psutil.AccessDenied:
         print(f"Error: Access denied to disk information.")  # Change xxx to the relevant resource
         return {}  # Or a suitable default value for the function
