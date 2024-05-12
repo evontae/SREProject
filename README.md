@@ -105,16 +105,25 @@ Project Roadmap:
     -   **Deliverable:** Integration with Azure Monitor to pull metrics and logs into the web dashboard for visualization.
     -   **Deliverable:** Implementation of autoscaling features based on system load or specific metrics (e.g., CPU usage) using Azure Virtual Machine Scale Sets.
 
-Design Process:
----------------
+In designing this tool, I prioritized modularity and maintainability by creating separate functions for each resource type (CPU, memory, disk, network). This made the code easier to understand, test, and modify. I chose psutil for its comprehensive system information retrieval capabilities and cross-platform compatibility.
 
-In designing this tool, I prioritized modularity and maintainability by creating separate functions for each resource type (CPU, memory, disk, network). This made the code easier to understand, test, and modify. I chose `psutil` for its comprehensive system information retrieval capabilities and cross-platform compatibility.
-
-Robust error handling was crucial to ensure the script's reliability in diverse environments. I implemented `try-except` blocks in each function to catch potential errors such as permission issues or unexpected exceptions, allowing the script to recover gracefully and continue running.
+Robust error handling was crucial to ensure the script's reliability in diverse environments. I implemented try-except blocks in each function to catch potential errors such as permission issues or unexpected data formats, allowing the script to recover gracefully and continue running.
 
 For data storage, I chose dictionaries, as they provided a flexible and structured way to represent the collected metrics. Each resource type had its own dictionary, with keys representing specific metrics (e.g., "total," "used," "free") and their corresponding values.
 
-Initially, I planned to have simple text output for the monitoring data. However, recognizing the potential value of visualizing this information in a more user-friendly way, I explored libraries like `tabulate` to format the data into tables. This is a stepping stone towards creating a web-based dashboard for real-time monitoring in the future.
+Initially, I planned for simple text output. However, I wanted the script to be user-friendly, so I incorporated pyinputplus to let users easily choose between JSON and tabular output. Recognizing the value of visualizing the data, I decided to add tabular output using the tabulate library.
+
+Challenges and Solutions:
+
+Implementing the tabular output presented some initial challenges. I had to carefully consider how to structure the data within the tables and handle nested dictionaries from the get_memory_info() and get_disk_info() functions. It took some trial and error to get the tabulate library to work as expected, but I was eventually able to produce clear and informative tables for all system metrics.
+
+Another challenge was ensuring that the print_table function would continue to print other tables even if one table encountered an error. I solved this by adding individual try-except blocks around each table-printing section, allowing the function to recover from errors gracefully and continue printing the remaining information.
+
+While the option to refactor the print_table function into smaller, specialized functions was considered, I ultimately decided to keep it as a single function for now to avoid overcomplicating the code and maintain a balance between modularity and simplicity.
+
+Future Enhancements:
+
+In the future, I plan to explore ways to optimize the script's performance and add more advanced features, such as support for different operating systems and integration with other monitoring tools. I also want to investigate using libraries like rich to create even more visually appealing and interactive tables for the dashboard.
 
 Contributing
 ------------
