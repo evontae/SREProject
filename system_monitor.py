@@ -85,25 +85,36 @@ def get_disk_info():
     """
     try:
         disk_partitions = psutil.disk_partitions()
-        disk_info = {}
+        disk_info = {"Disk Usage": {}}
         for partition in disk_partitions:
-            usage = shutil.disk_usage(partition.mountpoint)
-            # Create a dictionary for this partition (use mountpoint as key)
-            disk_info[partition.mountpoint] = {
+            try:  
+                usage = shutil.disk_usage(partition.mountpoint)
+            except Exception as e:
+                print(f"Error getting disk usage for {partition.mountpoint}: {e}")
+                continue  # Skip this partition and move on to the next
+            # Check if percent attribute exists, if it doesn't then calculate it
+            percent_used = usage.percent if hasattr(usage, "percent") else (usage.used / usage.total) * 100    
+            disk_info["Disk Usage"][partition.mountpoint] = {
                 "device": partition.device,
                 "fstype": partition.fstype,
-                "opts": partition.opts,  # Include options if needed
+                "opts": partition.opts,
                 "total": usage.total,
                 "used": usage.used,
                 "free": usage.free,
-                "percent": usage.percent
+                "percent": round(percent_used, 1)
             }
-        return {"Disk Usage": disk_info} # Return the main dictionary
+        
+        # Check if disk_info is empty after the loop
+        if not disk_info["Disk Usage"]:
+            print("Error: No accessible disk information found.")
+            return {}
+
+        return disk_info
     except psutil.AccessDenied:
-        print(f"Error: Access denied to disk information.") 
-        return {}  
+        print(f"Error: Access denied to disk information.")
+        return {}
     except Exception as error:
-        print(f"Error: Unexpected error occurred in get_disk_info - {error}") 
+        print(f"Error: Unexpected error occurred in get_disk_info - {error}")
         return {}
     
 def get_network_info():
@@ -205,7 +216,7 @@ def print_table(system_info):
     try:
         disk_headers = ["Mount Point", "Filesystem", "Size (GB)", "Used (GB)", "Free (GB)", "Percent (%)"]
         disk_table_data = []
-        for mountpoint, info in system_info["disk"].items():
+        for mountpoint, info in system_info["disk"]["Disk Usage"].items():
             disk_table_data.append([mountpoint, info["fstype"], 
                                 round(info["total"] / 1024 / 1024 / 1024, 2), 
                                 round(info["used"] / 1024 / 1024 / 1024, 2),
